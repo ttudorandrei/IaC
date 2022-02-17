@@ -1,0 +1,20 @@
+---
+
+# setting hosts
+- hosts: db
+
+  gather_facts: yes
+
+  become: true
+# install mongodb in db instance and ensure it's running
+  tasks:
+  - name: install mongodb
+    apt: pkg=mongodb state=absent
+
+  - name: edit mongodb ip
+    lineinfile:
+      path: /etc/mongodb.conf
+      regexp: '^bind_ip ='
+      line: bind_ip = 0.0.0.0
+  - name: install mongodb
+    apt: pkg=mongodb state=absent
