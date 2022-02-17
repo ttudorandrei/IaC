@@ -8,8 +8,8 @@
   - [What is Ansible?](#what-is-ansible)
   - [Setting up Ansible Controller](#setting-up-ansible-controller)
   - [Ansible Playbooks](#ansible-playbooks)
-    - [What are Playbooks](#what-are-playbooks)
-    - [Why should we use?](#why-should-we-use)
+  - [Why should we use Playbooks?](#why-should-we-use-playbooks)
+  - [Useful Commands](#useful-commands)
     - [How to create a Playbook (`<filename>.yaml/yml`)](#how-to-create-a-playbook-filenameyamlyml)
     - [Migrate to aws](#migrate-to-aws)
   - [Let's create Vagrantfile to create Three VMs for Ansible architecture](#lets-create-vagrantfile-to-create-three-vms-for-ansible-architecture)
@@ -44,20 +44,23 @@ Ansible is Agentless (the nodes do not need to have Ansible)
 
 ## Ansible Playbooks
 
-### What are Playbooks
+- They are a script (YAML/YML) files to implement config management.
+- The YAML file starts with `---`
 
-They are a script (YAML/YML) files to implement config management.
-The YAML file starts with `---`
-
-### Why should we use?
+## Why should we use Playbooks?
 
 Playbooks save time and are reusable.
+
+## Useful Commands
+
+- SSH into agent node: From controller, do `ssh vagrant@<ip>`
+- To run a playbook, from the controller, go to `/etc/ansible` and run `ansible-playbook <playbook-name>.yaml/yml`
+- To execute a command from `ansible controller` on a `node` do `ansible <node-name> -a '<command/s>'`. Node name has to be the same one as the one in `hosts file`.
 
 ### How to create a Playbook (`<filename>.yaml/yml`)
 
 - Go to hosts file and link the nodes (as in the setup above.)
 - Create a file with `yml` extension
-- Example of playbook:
 
 ### Migrate to aws
 
