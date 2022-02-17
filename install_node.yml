@@ -1,0 +1,33 @@
+# YML/YAML file to create a playbook to configure nodejs
+---
+# name of the host/instance/vm
+- hosts: web
+
+# collect logs
+  gather_facts: yes
+
+# grant admin access
+  become: true
+
+# adding the tasks - install nodejs, npm:
+  tasks:
+  - name: Copy app folder from local to web node
+    synchronize:
+      src: /home/vagrant/app/
+      dest: ~/app/
+
+  - name: Add nodejs apt key
+    apt_key:
+      url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+      state: present
+
+  - name: add nodejs 6.x version
+    apt_repository:
+      repo: deb https://deb.nodesource.com/node_6.x bionic main
+      update_cache: yes
+
+  - name: Install nodejs
+    apt: pkg=nodejs state=present
+
+  - name: Install npm
+    apt: pkg=npm state=present

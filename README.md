@@ -7,6 +7,11 @@
   - [Technologies we will use](#technologies-we-will-use)
   - [What is Ansible?](#what-is-ansible)
   - [Setting up Ansible Controller](#setting-up-ansible-controller)
+  - [Ansible Playbooks](#ansible-playbooks)
+    - [What are Playbooks](#what-are-playbooks)
+    - [Why should we use?](#why-should-we-use)
+    - [How to create a Playbook (`<filename>.yaml/yml`)](#how-to-create-a-playbook-filenameyamlyml)
+    - [Migrate to aws](#migrate-to-aws)
   - [Let's create Vagrantfile to create Three VMs for Ansible architecture](#lets-create-vagrantfile-to-create-three-vms-for-ansible-architecture)
     - [Ansible controller and Ansible agents](#ansible-controller-and-ansible-agents)
 
@@ -36,6 +41,35 @@ Ansible is Agentless (the nodes do not need to have Ansible)
 - to connect to agent nodes, from your controller do `ssh <node-username>@<node-ip>`. Example: `ssh vagrant@193.168.33.11`
 - check free memory in all nodes: From controller do `ansible all -a free`
 - copy file from controller to node: `ansible <destination-node-name> -m copy -a 'src=<path-to-file> dest=<destination-path-on-node>'`
+
+## Ansible Playbooks
+
+### What are Playbooks
+
+They are a script (YAML/YML) files to implement config management.
+The YAML file starts with `---`
+
+### Why should we use?
+
+Playbooks save time and are reusable.
+
+### How to create a Playbook (`<filename>.yaml/yml`)
+
+- Go to hosts file and link the nodes (as in the setup above.)
+- Create a file with `yml` extension
+- Example of playbook:
+
+### Migrate to aws
+
+- Get the ip of the instance
+- Got to `/etc/ansible`
+- Open the `hosts` file
+- Add:
+
+```
+[aws]
+<ec2-ip> <secret_key> <password>
+```
 
 ## Let's create Vagrantfile to create Three VMs for Ansible architecture
 
