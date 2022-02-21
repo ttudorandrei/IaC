@@ -12,8 +12,11 @@
   - [Useful Commands](#useful-commands)
     - [How to create a Playbook (`<filename>.yaml/yml`)](#how-to-create-a-playbook-filenameyamlyml)
     - [Migrate to aws](#migrate-to-aws)
+    - [Create the EC2 instance using Ansible yml file](#create-the-ec2-instance-using-ansible-yml-file)
+    - [After launching instance](#after-launching-instance)
   - [Let's create Vagrantfile to create Three VMs for Ansible architecture](#lets-create-vagrantfile-to-create-three-vms-for-ansible-architecture)
     - [Ansible controller and Ansible agents](#ansible-controller-and-ansible-agents)
+  - [Useful links](#useful-links)
 
 ## Technologies we will use
 
@@ -64,7 +67,57 @@ Playbooks save time and are reusable.
 
 ### Migrate to aws
 
+- Set up ansible controller to use in hybrid infra form on prem - public cloud
+- Install required dependencies (`python3` - `pip3` - `awscli` - `ansible` - `boto3` - `tree`)
+- To sync local files to vagrant controller do `scp -i "<path-and-file-folder-name>" -r <folder-or-filename> <vm-suer>@<ip-of-vm>:<path-to-destination-folder>`. Example: `scp -i "~/sparta-global/week-3-devops-intro-environments" -r app vagrant@192.168.33.12:~/app/`
+- Alias `python=python3`
+- Set up `Ansible Vault`
+- Get `aws_access & secret keys`
+- ansible-vault folder structure: got to `/etc/ansible` and create a new folder `group_vars` inside of which you create another folder `all`.
+- Inside the `all` folder from above create a `file.yml` to store `aws keys`: `sudo ansible-vault create pass.yml`
+- chmod 600 file.yml (to change permissions for `file.yml`)
+
+### Create the EC2 instance using Ansible yml file
+
+- Create a new `.yml` file
+- Add this code:
+
+```
+---
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars_files:
+  - group_vars/all/pass.yml
+
+  tasks:
+  - name: Launch ec2 instance
+    ec2:
+      aws_access_key: "{{ ec2_access_key }}"
+      aws_secret_key: "{{ ec2_secret_key }}"
+      key_name: eng103a
+      instance_type: t2.micro
+      image: ami-07d8796a2b0f8d29c
+      wait: yes
+      group: default
+      region: "eu-west-1"
+      count: 1
+      vpc_subnet_id: subnet-0429d69d55dfad9d2
+      assign_public_ip: yes
+      instance_tags:
+        Name: tudor_playbook
+
+  tags: ['never', 'create_ec2']
+
+```
+
+- Use this command to execute the `.yml` file: `sudo ansible-playbook ec2-3.yml --ask-vault-pass --tags create_ec2 --tags=ec2-create -e "ansible_python_interpreter=/usr/bin/python3" --verbose`
+
+### After launching instance
+
 - Get the ip of the instance
+- ping the instance `ansible <name-of-instance> -m ping`. If it is an EC2 instance, do something like this: `sudo ansible aws -m ping --ask-vault-pass`
 - Got to `/etc/ansible`
 - Open the `hosts` file
 - Add:
@@ -72,7 +125,12 @@ Playbooks save time and are reusable.
 ```
 [aws]
 <ec2-ip> <secret_key> <password>
+# example for ec2 instance
+[aws]
+54.170.219.46 ansible_connection=ssh ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/vagrant/.ssh/eng103a.pem
 ```
+
+- To work with a hybrid setup you need to add `--ask-vault-pass` at the end of the command. Example: `sudo ansible all -m ping --ask-vault-pass` to ping instances
 
 ## Let's create Vagrantfile to create Three VMs for Ansible architecture
 
@@ -115,7 +173,7 @@ Playbooks save time and are reusable.
      #   assigning private IP
 
      #config.hostsupdater.aliases = ["development.web"]
-     # creating a link called development.web so we can access web page with this link instread of an IP
+     # creating a link called development.web so we can access web page with this link instead of an IP
 
    end
 
@@ -134,3 +192,7 @@ Playbooks save time and are reusable.
 
  end
 ```
+
+## Useful links
+
+- Create EC2 instance with ansible: [Article on medium](https://medium.datadriveninvestor.com/devops-using-ansible-to-provision-aws-ec2-instances-3d70a1cb155f), [Official Ansible Documentation](https://docs.ansible.com/ansible/latest/collections/amazon/aws/ec2_module.html), [Similar Ansible documentation](https://docs.ansible.com/ansible/latest/collections/amazon/aws/ec2_instance_module.html#ansible-collections-amazon-aws-ec2-instance-module)
