@@ -125,6 +125,7 @@ Playbooks save time and are reusable.
 ```
 [aws]
 <ec2-ip> <secret_key> <password>
+
 # example for ec2 instance
 [aws]
 54.170.219.46 ansible_connection=ssh ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/vagrant/.ssh/eng103a.pem
