@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars_files:
+  - group_vars/all/pass.yml
+
+  tasks:
+  - name: Sync keys
+    ec2_key:
+      name: id_rsa
+      key_material: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      region: "eu-west-1"
+      aws_access_key: "{{ ec2_access_key }}"
+      aws_secret_key: "{{ ec2_secret_key }}"
+  - name: Launch ec2 instance
+    ec2:
+      aws_access_key: "{{ ec2_access_key }}"
+      aws_secret_key: "{{ ec2_secret_key }}"
+      key_name: eng103a-tudor
+      instance_type: t2.micro
+      image: ami-07d8796a2b0f8d29c
+      wait: yes
+      group: "eng103a_tudor"
+      region: "eu-west-1"
+      count: 1
+      vpc_subnet_id: subnet-0429d69d55dfad9d2
+      assign_public_ip: yes
+      instance_tags:
+        Name: eng103a_tudor_playbook_db
+
+  tags: ['never', 'create_ec2']
