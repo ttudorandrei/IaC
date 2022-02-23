@@ -1,2 +1,4 @@
 .vagrant/
-Terraform/.terraform
+Terraform/.terraform/
+Terraform/.terraform.lock.hcl
+Terraform/variable.tf

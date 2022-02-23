@@ -23,6 +23,7 @@
 
 - Terraform uses `.tf` extension
 - `main.tf` is the runner file. It executes everything. Entry point into our script.
+- `variable.tf` file holds our variables. Needs to be ignored in our `.gitignore`
 
 ## Set up AWS keys as an ENV in windows machine
 
@@ -40,3 +41,4 @@
 - `terraform plan` checks the script for syntax errors
 - `terraform apply` runs the playbook (implements the script)
 - `terraform destroy` to delete everything
+- `terraform apply -target=<resourcename>.<name>` launch specific resource
