@@ -47,3 +47,55 @@ resource "aws_autoscaling_attachment" "tudor" {
   autoscaling_group_name = aws_autoscaling_group.tudor.id
   alb_target_group_arn   = aws_lb_target_group.tudor.arn
 }
+
+resource "aws_autoscaling_policy" "tudor_scale_up" {
+  name                   = "tudor-scale-up"
+  autoscaling_group_name = aws_autoscaling_group.tudor.name
+  adjustment_type        = "ChangeInCapacity"
+  scaling_adjustment     = 1
+  cooldown               = 300
+}
+
+resource "aws_autoscaling_policy" "tudor_scale_down" {
+  name                   = "tudor-scale-down"
+  autoscaling_group_name = aws_autoscaling_group.tudor.name
+  adjustment_type        = "ChangeInCapacity"
+  scaling_adjustment     = -1
+  cooldown               = 300
+
+}
+
+resource "aws_cloudwatch_metric_alarm" "tudor_scale_up_alarm" {
+  alarm_description   = "Monitors CPU utilization for app"
+  alarm_actions       = [aws_autoscaling_policy.tudor_scale_up.arn]
+  alarm_name          = "tudor_scale_up"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  namespace           = "AWS/EC2"
+  metric_name         = "CPUUtilization"
+  threshold           = "30"
+  evaluation_periods  = "1"
+  period              = "120"
+  statistic           = "Average"
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.tudor.name}"
+  }
+
+}
+
+resource "aws_cloudwatch_metric_alarm" "tudor_scale_down_alarm" {
+  alarm_description   = "Monitors CPU utilization for app"
+  alarm_actions       = [aws_autoscaling_policy.tudor_scale_down.arn]
+  alarm_name          = "tudor_scale_down"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  namespace           = "AWS/EC2"
+  metric_name         = "CPUUtilization"
+  threshold           = "10"
+  evaluation_periods  = "1"
+  period              = "120"
+  statistic           = "Average"
+
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.tudor.name}"
+  }
+}
+
