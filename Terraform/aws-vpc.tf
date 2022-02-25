@@ -18,6 +18,17 @@ resource "aws_subnet" "tudor-tf-public-subnet" {
   }
 }
 
+resource "aws_subnet" "tudor-tf-public-subnet-2" {
+  vpc_id                  = "vpc-0863ae82df2ea687b"
+  cidr_block              = "10.0.42.0/24"
+  map_public_ip_on_launch = true
+  availability_zone       = "eu-west-1b"
+
+  tags = {
+    Name = "tudor-public-subnet-2"
+  }
+}
+
 resource "aws_internet_gateway" "tudor-tf-internet-gateway" {
   vpc_id = "vpc-0863ae82df2ea687b"
   tags = {
